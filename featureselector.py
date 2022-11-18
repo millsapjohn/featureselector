@@ -182,19 +182,30 @@ class FeatureSelector:
 
     def run(self):
         """Run method that performs all the real work"""
+        self.canvas.setMapTool(self.gen_temp_labels)
 
-        # Create the dialog with elements (after translation) and keep reference
-        # Only create GUI ONCE in callback, so that it will only load when the plugin is started
-        if self.first_start == True:
-            self.first_start = False
-            self.dlg = FeatureSelectorDialog()
+    def gen_temp_labels(self):
+        """currently only works for the active layer - will need to update for all layers"""
+        """generates ephemeral labels for all features in the active layer which are
+        visible in the current map extent"""
+        # check for current active layer, exits if not
+        # this will need to be changed to a while loop and prompt for layer at some point
+        if iface.activelayer() == none:
+            exit
+        else:
+            curr_layer = iface.activelayer()
+        
+        # initialize list of visible features
+        visible_features = []
 
-        # show the dialog
-        self.dlg.show()
-        # Run the dialog event loop
-        result = self.dlg.exec_()
-        # See if OK was pressed
-        if result:
-            # Do something useful here - delete the line containing pass and
-            # substitute with your code.
-            pass
+        # generate extents of current map view
+        view = QgsGeometry.fromRect(self().extent())
+
+        for f in curr_layer.getFeatures():
+            if intersects(f,view) == true:
+                visible_features.append(f)
+            elif within(f,view) == true:
+                visible_features.append(f)
+            else:
+                continue
+
