@@ -67,6 +67,8 @@ class FeatureSelector:
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
 
+        # instantiate empty "visible features" list
+        visible_features = []
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
         """Get the translation for a string using Qt translation API.
@@ -195,9 +197,6 @@ class FeatureSelector:
         else:
             curr_layer = iface.activelayer()
         
-        # initialize list of visible features
-        visible_features = []
-
         # generate extents of current map view
         view = QgsGeometry.fromRect(self().extent())
 
@@ -209,3 +208,13 @@ class FeatureSelector:
             else:
                 continue
 
+    def filter_features(self):
+        if visible_features.count() == 0:
+           pass 
+        else:
+            for f in visible_features:
+                if f.type != "line":
+                    visible_features.remove(f)
+                else:
+                    continue
+        return visible_features
